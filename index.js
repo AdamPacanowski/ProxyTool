@@ -5,12 +5,12 @@ const PORT = 8000;
 
 const server = new ProxyChain.Server({ 
   port: PORT, 
-  prepareRequestFunction: ({ request, username, password, hostname, port, isHttp }) => {
+  prepareRequestFunction: async ({ request, username, password, hostname, port, isHttp }) => {
     const url = ProxyChain.parseUrl(request.url);
     let result;
 
     try {
-      result = entriesFinder(url);
+      result = await entriesFinder(url);
     }
     catch (e) {
       console.error(e);

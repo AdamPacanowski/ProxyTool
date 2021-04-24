@@ -1,17 +1,9 @@
+const childProcess = require('child_process');
 const fileGetter = require('./fileGetter');
+const downloader = require('./downloader');
+const config = require('./config.json');
 
-const entries = {
-  'pacanowski.me': [{
-    pathRegex: '\.js',
-    pathToFile: 'C:\\Software\\ProxyTool\\index.js',
-    headers: {
-      'Content-Type': 'application/javascript'
-    }
-  }, {
-    pathRegex: '\.css',
-    body: null
-  }]
-};
+const entries = config;
 
 module.exports = (url) => {
   const hostEntries = entries[url.host];
@@ -43,6 +35,12 @@ module.exports = (url) => {
     return null;
   }
 
+  if (entryFound.commandBefore) {
+    childProcess.execSync(entryFound.commandBefore.command, {
+      cwd: entryFound.commandBefore.cwd
+    });
+  }
+
   const result = {
     body: undefined,
     headers: undefined
@@ -52,13 +50,27 @@ module.exports = (url) => {
     result.headers = entryFound.headers;
   }
 
-  if (entryFound.pathToFile) {
-    result.body = fileGetter(entryFound.pathToFile);    
+  let fetching;
+
+  if (entryFound.urlToDownload) {
+    fetching = new Promise(resolve => {
+      downloader(entryFound.urlToDownload).then(body => {
+        result.body = body;
+
+        resolve(result);
+      });
+    });
+  } else {
+    if (entryFound.pathToFile) {
+      result.body = fileGetter(entryFound.pathToFile);    
+    }
+  
+    if (entryFound.body) {
+      result.body = entryFound.body;
+    }
+
+    fetching = Promise.resolve(result);
   }
 
-  if (entryFound.body) {
-    result.body = entryFound.body;
-  }
-
-  return result;
+  return fetching;
 };
