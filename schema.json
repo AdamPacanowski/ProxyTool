@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$id": "http://json-schema.org/draft-06/schema#",
+  "title": "ProxyTool schema",
+  "definitions": {
+    "entry": {
+      "type": "object",
+      "properties": {
+        "pathRegex": { "type": "string" },
+        "pathToFile": { "type": "string" },
+        "commandBefore": {
+          "type": "object",
+          "properties": {
+            "cwd": { "type": "string" },
+            "command": { "type": "string" }
+          },
+          "required": ["command"]
+        },
+        "headers": { "type": "object" },
+        "urlToDownload": { "type": "string" },
+        "body": { "type": ["string", "null"] }
+      },
+      "required": ["pathRegex"]
+    },
+    "urlEntry": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/entry" }
+    }
+  },
+  "patternProperties": {
+    "^.*$": { "$ref": "#/definitions/urlEntry" }
+  }
+}

@@ -36,9 +36,13 @@ module.exports = (url) => {
   }
 
   if (entryFound.commandBefore) {
-    childProcess.execSync(entryFound.commandBefore.command, {
-      cwd: entryFound.commandBefore.cwd
-    });
+    try {
+      childProcess.execSync(entryFound.commandBefore.command, {
+        cwd: entryFound.commandBefore.cwd
+      });
+    } catch (e) {
+      console.error('Error during command run.');
+    }
   }
 
   const result = {
