@@ -1,9 +1,25 @@
 const childProcess = require('child_process');
+const Ajv = require('ajv');
 const fileGetter = require('./fileGetter');
 const downloader = require('./downloader');
+
 const config = require('./config.json');
+const jsonSchema = require('./schema.json');
+
 
 const entries = config;
+
+const ajv = new Ajv({
+  strictTypes: false
+});
+
+const validate = ajv.compile(jsonSchema);
+const valid = validate(config);
+
+if (!valid) {
+  console.error(validate.errors);
+  process.exit(1);
+}
 
 module.exports = (url) => {
   const hostEntries = entries[url.host];

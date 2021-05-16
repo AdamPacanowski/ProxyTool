@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/AdamPacanowski/ProxyTool#readme",
   "dependencies": {
+    "ajv": "8.4.0",
     "axios": "0.21.1",
     "proxy-chain": "1.0.2"
   }
